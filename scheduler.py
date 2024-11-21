@@ -23,7 +23,9 @@ def process_documents():
             id_product = doc.get("idProduct")
 
             if url and id_product:
-                scrape_and_store(url, id_product)
+                success = scrape_and_store(url, id_product)
+                if not success:
+                    print(f"El scraping falló para e producto {id_product}. Verifica la URL: {url}")
             else:
                 print(f"Documento inválido: {doc}")
 

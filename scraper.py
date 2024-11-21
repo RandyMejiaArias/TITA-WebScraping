@@ -12,39 +12,52 @@ HEADERS = {
 }
 
 def scrape_and_store(url, id_product):
-    try:
-        resp = requests.get(url, headers=HEADERS)
-        soup = BeautifulSoup(resp.text, 'html.parser')
+    """
+    Realiza el scraping de una URL y guarda los datos obtenidos en MongoDB.
+    Implementa lógica de reintento hasta un máximo de intentos.
+    """
+    attempts = 0
+    max_attempts = 6
 
-        # Obtener el título
-        title = soup.find('span', {'id': 'productTitle'}).text.strip()
+    while attempts < max_attempts:
+        try:
+            resp = requests.get(url, headers=HEADERS)
+            soup = BeautifulSoup(resp.text, 'html.parser')
 
-        # Obtener la calificación de estrellas y truncar a los primeros 3 caracteres
-        rating = soup.find('span', {'id': 'acrPopover'})['title'][:3]
+            # Obtener el título
+            title = soup.find('span', {'id': 'productTitle'}).text.strip()
 
-        # Obtener el precio y eliminar el signo de $ y el prefijo 'US'
-        price = soup.find("span", {"class": "a-price"}).find("span").text.replace('US', '').replace('$', '').strip()
+            # Obtener la calificación de estrellas y truncar a los primeros 3 caracteres
+            rating = soup.find('span', {'id': 'acrPopover'})['title'][:3]
 
-        # Registrar la fecha y hora de la ejecución
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # Obtener el precio y eliminar el signo de $ y el prefijo 'US'
+            price = soup.find("span", {"class": "a-price"}).find("span").text.replace('US', '').replace('$', '').strip()
 
-        # Guardar resultados en MongoDB
-        product_data = {
-            "product_id": id_product,
-            "title": title,
-            "rating": rating,
-            "price": price,
-            "url": url,
-            "timestamp": timestamp
-        }
+            # Registrar la fecha y hora de la ejecución
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        output_collection.insert_one(product_data)
+            # Guardar resultados en MongoDB
+            product_data = {
+                "product_id": id_product,
+                "title": title,
+                "rating": rating,
+                "price": price,
+                "url": url,
+                "timestamp": timestamp
+            }
 
-        print(f"Ejecución exitosa: Datos guardados en MongoDB para idProducto {id_product}")
-        print("Título:", title)
-        print("Calificación:", rating)
-        print("Precio:", price)
-        print("Fecha y hora:", timestamp)
+            output_collection.insert_one(product_data)
 
-    except Exception as e:
-        print(f"Ocurrió un error para idProducto {id_product} con URL {url}: {str(e)}")
+            print(f"Ejecución exitosa. Datos guardados en MongoDB para idProducto {id_product}")
+            print("Título:", title)
+            print("Calificación:", rating)
+            print("Precio:", price)
+            print("Fecha y hora:", timestamp)
+            return True  # Indica que la ejecución fue exitosa
+
+        except Exception as e:
+            attempts += 1
+            print(f"Intento {attempts} para idProducto {id_product}: Ocurrió un error ({str(e)}). Reintentando...")
+    
+    print(f"No se pudo obtener la información para idProducto {id_product} después de {max_attempts} intentos.")
+    return False  # Indica que la ejecución falló

@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
-from database import output_collection
+from database import output_collection, connection, cursor
 
 # Configuración de headers para scraping
 HEADERS = {
@@ -46,7 +46,18 @@ def scrape_and_store(url, id_product):
                 "timestamp": timestamp
             }
 
-            output_collection.insert_one(product_data)
+            result = output_collection.insert_one(product_data)
+            mongo_id = result.inserted_id 
+
+            # Guardar resultados en MySQL
+            mysql_query = """
+                INSERT INTO `scraping-data` (product_id, title, rating, price, url, timestamp, _id)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
+
+            mysql_data = (id_product, title, rating, price, url, timestamp, str(mongo_id))
+            cursor.execute(mysql_query, mysql_data)
+            connection.commit()
 
             print(f"Ejecución exitosa. Datos guardados en MongoDB para idProducto {id_product}")
             print("Título:", title)

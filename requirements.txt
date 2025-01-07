@@ -1,7 +1,10 @@
 bs4
 datetime
+numpy
 python-dotenv
+pandas
 pymysql
 pymongo
 requests
 schedule
+scikit-learn

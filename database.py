@@ -32,7 +32,8 @@ config = {
   'password': MYSQL_PASSWORD,
   'host': MYSQL_HOST,  # O usa '127.0.0.1'
   'port': 3306,
-  'database': MYSQL_DATABASE
+  'database': MYSQL_DATABASE,
+  'cursorclass': pymysql.cursors.DictCursor
 }
 
 try:

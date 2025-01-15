@@ -8,3 +8,4 @@ pymongo
 requests
 schedule
 scikit-learn
+cryptography

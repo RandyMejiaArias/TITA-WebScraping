@@ -10,10 +10,11 @@ from predicter import daily_prediction, update_real_prices, calculate_updated_er
 load_dotenv()
 
 # Horarios desde variables de entorno
-EXECUTION_TIME_1 = os.getenv("EXECUTION_TIME_1", "06:00")
-EXECUTION_TIME_2 = os.getenv("EXECUTION_TIME_2", "06:20")
-EXECUTION_TIME_3 = os.getenv("EXECUTION_TIME_3", "06:40")
-EXECUTION_TIME_4 = os.getenv("EXECUTION_TIME_4", "07:00")
+EXECUTION_TIME_1 = os.getenv("EXECUTION_TIME_1", "05:00")
+EXECUTION_TIME_2 = os.getenv("EXECUTION_TIME_2", "06:00")
+EXECUTION_TIME_3 = os.getenv("EXECUTION_TIME_3", "06:05")
+EXECUTION_TIME_4 = os.getenv("EXECUTION_TIME_4", "06:07")
+EXECUTION_TIME_5 = os.getenv("EXECUTION_TIME_5", "06:09")
 
 def process_documents():
     print("Iniciando proceso de scraping...")
@@ -37,9 +38,10 @@ def process_documents():
 
 # Programar las ejecuciones
 schedule.every().day.at(EXECUTION_TIME_1).do(process_documents)
-schedule.every().day.at(EXECUTION_TIME_2).do(daily_prediction)
-schedule.every().day.at(EXECUTION_TIME_3).do(update_real_prices)
-schedule.every().day.at(EXECUTION_TIME_4).do(calculate_updated_errors)
+schedule.every().day.at(EXECUTION_TIME_2).do(process_documents)
+schedule.every().day.at(EXECUTION_TIME_3).do(daily_prediction)
+schedule.every().day.at(EXECUTION_TIME_4).do(update_real_prices)
+schedule.every().day.at(EXECUTION_TIME_5).do(calculate_updated_errors)
 
 def start_scheduler():
     print("Iniciando programador...")

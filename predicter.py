@@ -83,25 +83,42 @@ def daily_prediction():
     # Insertar predicciones futuras
     for future_data in predictions_list:
       for _, row in future_data.iterrows():
+        # Verificar si el registro ya existe
         cursor.execute("""
-        INSERT INTO predictions (product_id, timestamp, predicted_price, day, month, day_of_week, days_since_start, rating, moving_avg_3, moving_avg_7)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (row['product_id'], row['timestamp'], row['predicted_price'], row['day'], row['month'], row['day_of_week'], row['days_since_start'], row['rating'], row['moving_avg_3'], row['moving_avg_7']))
+        SELECT EXISTS(
+          SELECT 1 FROM predictions
+          WHERE product_id = %s AND timestamp = %s
+        ) AS record_exists
+        """, (row['product_id'], row['timestamp']))
+        
+        result = cursor.fetchone()
+        if result is None or result['record_exists'] == 0:
+          cursor.execute("""
+          INSERT INTO predictions (product_id, timestamp, predicted_price, day, month, day_of_week, days_since_start, rating, moving_avg_3, moving_avg_7)
+          VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+          """, (row['product_id'], row['timestamp'], row['predicted_price'], row['day'], row['month'], row['day_of_week'], row['days_since_start'], row['rating'], row['moving_avg_3'], row['moving_avg_7']))
     
     # Insertar errores
     for error in errors_list:
+      # Verificar si el registro ya existe
       cursor.execute("""
-      INSERT INTO model_errors (product_id, mae, rmse)
-      VALUES (%s, %s, %s)
-      """, (error['product_id'], error['mae'], error['rmse']))
+      SELECT EXISTS(
+        SELECT 1 FROM predictions
+        WHERE product_id = %s AND timestamp LIKE %s
+      ) AS record_exists
+      """, (row['product_id'], row['timestamp'].strftime('%Y-%m-%d')))
+      result = cursor.fetchone()
+      if result is None or result['record_exists'] == 0:
+        cursor.execute("""
+        INSERT INTO model_errors (product_id, mae, rmse)
+        VALUES (%s, %s, %s)
+        """, (error['product_id'], error['mae'], error['rmse']))
     
     connection.commit()
     print("Predicciones y errores almacenados correctamente.")
   except Exception as e:
     connection.rollback()
     print(f"Error al guardar predicciones y errores: {e}")
-  finally:
-    connection.close()
 
 def update_real_prices():
   """

@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, timedelta
 from database import output_collection, connection, cursor
 
 # Configuración de headers para scraping
@@ -45,6 +45,22 @@ def scrape_and_store(url, id_product):
                 "url": url,
                 "timestamp": timestamp
             }
+
+            start_of_day = timestamp.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_of_day = start_of_day + timedelta(days=1)
+
+            # Consulta para verificar el mismo día
+            product_found = output_collection.find_one({
+                "product_id": id_product,
+                "timestamp": {
+                    "$gte": start_of_day,
+                    "$lt": end_of_day
+                }
+            })
+
+            if product_found:
+                print(f"El producto con idProducto {id_product} y fecha {timestamp} ya estaba registrado en MongoDB.")
+                return True
 
             result = output_collection.insert_one(product_data)
             mongo_id = result.inserted_id 

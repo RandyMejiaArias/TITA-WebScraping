@@ -46,15 +46,20 @@ def scrape_and_store(url, id_product):
                 "timestamp": timestamp
             }
 
-            start_of_day = timestamp.replace(hour=0, minute=0, second=0, microsecond=0)
+            # Convertir el timestamp del día a un objeto datetime
+            start_of_day = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').replace(hour=0, minute=0, second=0)
             end_of_day = start_of_day + timedelta(days=1)
+
+            # Convertir los límites de tiempo a cadenas en el mismo formato
+            start_of_day_str = start_of_day.strftime('%Y-%m-%d %H:%M:%S')
+            end_of_day_str = end_of_day.strftime('%Y-%m-%d %H:%M:%S')
 
             # Consulta para verificar el mismo día
             product_found = output_collection.find_one({
                 "product_id": id_product,
                 "timestamp": {
-                    "$gte": start_of_day,
-                    "$lt": end_of_day
+                    "$gte": start_of_day_str,
+                    "$lt": end_of_day_str
                 }
             })
 

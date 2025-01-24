@@ -1,8 +1,8 @@
+import os
+from dotenv import load_dotenv
 import pymysql
 from datetime import datetime, timedelta
 
-import os
-from dotenv import load_dotenv
 load_dotenv()
 
 # Configuración de MySQL
@@ -83,6 +83,8 @@ def etl_update():
     conn.commit()
     print(f"Tabla de hechos actualizada con éxito para el rango {yesterday} - {today}")
 
+  except pymysql.MySQLError as err:
+    print(f"Error: {err}")
   except Exception as e:
     print(f"Error en el proceso ETL: {e}")
   finally:

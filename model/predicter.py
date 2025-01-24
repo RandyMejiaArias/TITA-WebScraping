@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-from database import output_collection, connection, cursor
+from utils.database import output_collection, connection, cursor
 
 def daily_prediction():
   # Cargar datos históricos desde la base de datos

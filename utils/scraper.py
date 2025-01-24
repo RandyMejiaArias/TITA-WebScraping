@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from database import output_collection, connection, cursor
+from utils.database import output_collection, connection, cursor
 
 # Configuración de headers para scraping
 HEADERS = {

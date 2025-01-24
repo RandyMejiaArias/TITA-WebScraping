@@ -2,24 +2,24 @@ import schedule
 import time
 from dotenv import load_dotenv
 import os
-from database import input_collection
-from checker import calculate_updated_errors, fix_null_prices,update_real_prices
-from predicter import daily_prediction
-from scraper import scrape_and_store
-from updater import etl_update
+from data.checker import calculate_updated_errors, fix_null_prices,update_real_prices
+from data.updater import etl_update
+from model.predicter import daily_prediction
+from utils.database import input_collection
+from utils.scraper import scrape_and_store
 
 # Cargar variables de entorno
 load_dotenv()
 
 # Horarios desde variables de entorno
-EXECUTION_TIME_1 = os.getenv("EXECUTION_TIME_1", "04:00")
-EXECUTION_TIME_2 = os.getenv("EXECUTION_TIME_2", "04:40")
-EXECUTION_TIME_3 = os.getenv("EXECUTION_TIME_3", "05:20")
-EXECUTION_TIME_4 = os.getenv("EXECUTION_TIME_4", "06:00")
-EXECUTION_TIME_5 = os.getenv("EXECUTION_TIME_5", "06:05")
-EXECUTION_TIME_6 = os.getenv("EXECUTION_TIME_6", "06:07")
-EXECUTION_TIME_7 = os.getenv("EXECUTION_TIME_7", "06:09")
-EXECUTION_TIME_8 = os.getenv("EXECUTION_TIME_8", "06:15")
+EXECUTION_TIME_1 = os.getenv("EXECUTION_TIME_1", "03:00")
+EXECUTION_TIME_2 = os.getenv("EXECUTION_TIME_2", "03:40")
+EXECUTION_TIME_3 = os.getenv("EXECUTION_TIME_3", "04:20")
+EXECUTION_TIME_4 = os.getenv("EXECUTION_TIME_4", "05:00")
+EXECUTION_TIME_5 = os.getenv("EXECUTION_TIME_5", "05:05")
+EXECUTION_TIME_6 = os.getenv("EXECUTION_TIME_6", "05:07")
+EXECUTION_TIME_7 = os.getenv("EXECUTION_TIME_7", "05:09")
+EXECUTION_TIME_8 = os.getenv("EXECUTION_TIME_8", "05:15")
 
 def process_documents():
     print("Iniciando proceso de scraping...")
